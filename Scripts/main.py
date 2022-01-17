@@ -45,20 +45,15 @@ started_cooldown = False
 
 enemy_speed = 2
 
-
-def hit():
-    print("hit")
-
-
 while True:
     dt = time.time() - last_time
     dt *= 60
     last_time = time.time()
 
     screen.fill((0, 0, 0))
-    player.update(PLAYER_SPEED, dt, up=moving_up, down=moving_down, right=moving_right, left=moving_left, shooting=shooting)
+    enemy_array = player.update(PLAYER_SPEED, dt, enemy_array, up=moving_up, down=moving_down, right=moving_right, left=moving_left, shooting=shooting)
 
-    if enemy_array[len(enemy_array) - 1].x >= SCREEN_SIZE[0] - 30 or enemy_array[0].x < 0:
+    if len(enemy_array) and (enemy_array[len(enemy_array) - 1].x >= SCREEN_SIZE[0] - 30 or enemy_array[0].x < 0):
         enemy_speed *= -1
         for enemy in enemy_array:
             enemy.y += 10
@@ -74,7 +69,7 @@ while True:
             cooldown_tracker = 0
             started_cooldown = False
 
-    if not started_cooldown:
+    if len(enemy_array) and not started_cooldown:
         laser_rect = Rect(random.choice(enemy_array).x + 15, random.choice(enemy_array).y + 25, 6, 14)
         enemy_laser_arr.append(laser_rect)
         started_cooldown = True
@@ -86,7 +81,6 @@ while True:
         if player.rect.colliderect(laser):
             enemy_laser_arr.remove(laser)
             player.take_damage(1)
-            hit()
 
         # pygame.draw.rect(screen, (255, 0, 0), laser, 2, 3)
         screen.blit(enemy_laser_image, (laser.x, laser.y))
@@ -94,6 +88,9 @@ while True:
 
     mouse_pos = pygame.mouse.get_pos()
     mouse_rect = pygame.Rect(mouse_pos[0], mouse_pos[1], 15, 20)
+
+    if not player.lives:
+        break
 
     for event in pygame.event.get():
         if event.type == QUIT:

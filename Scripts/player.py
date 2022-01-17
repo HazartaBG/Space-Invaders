@@ -3,7 +3,7 @@ import pygame
 PLAYER_SPEED = 2
 LASER_SPEED = 5
 
-COOLDOWN_TIME = 400
+COOLDOWN_TIME = 10
 cooldown_tracker = 0
 started_cooldown = False
 
@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.clock = clock
         self.lives = 3
 
-    def update(self, player_speed, dt, **kwargs):
+    def update(self, player_speed, dt, enemy_list, **kwargs) -> list[pygame.Rect]:
         global cooldown_tracker, started_cooldown
 
         if started_cooldown:
@@ -37,9 +37,6 @@ class Player(pygame.sprite.Sprite):
             if cooldown_tracker > COOLDOWN_TIME:
                 cooldown_tracker = 0
                 started_cooldown = False
-
-        if len(kwargs) < 4:
-            return
 
         if kwargs.get("up") and self.rect.y > 0:
             self.rect.y = round(self.rect.y - PLAYER_SPEED * dt)
@@ -52,7 +49,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x = round(self.rect.x + PLAYER_SPEED * dt)
 
         if kwargs.get("shooting"):
-            if not started_cooldown:
+            if not started_cooldown:  # and not len(self.lasers)
                 laser_rect = pygame.Rect(self.rect.x + self.laser_size[1] - 2, self.rect.y, self.laser_size[0], self.laser_size[1])
                 self.lasers.append(laser_rect)
                 started_cooldown = True
@@ -60,6 +57,10 @@ class Player(pygame.sprite.Sprite):
         for laser_rect in self.lasers:
             self.parent.blit(self.laser_image, (laser_rect.x, laser_rect.y))
             # pygame.draw.rect(self.parent, (0, 0, 255), laser_rect, 2, 3)
+            for index in laser_rect.collidelistall(enemy_list):
+                enemy_list.pop(index)
+                self.lasers.remove(laser_rect)
+
             if laser_rect.y < -20:
                 self.lasers.remove(laser_rect)
             else:
@@ -68,5 +69,8 @@ class Player(pygame.sprite.Sprite):
         # pygame.draw.rect(self.parent, (0, 0, 255), self.rect, 2, 3)
         self.parent.blit(self.image, (self.rect.x, self.rect.y))
 
+        return enemy_list
+
     def take_damage(self, damage):
         self.lives -= damage
+
