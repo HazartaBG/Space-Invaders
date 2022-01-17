@@ -7,6 +7,8 @@ from player import Player
 
 pygame.init()
 
+print("githubTest")
+
 images_path = '..\\Resources\\Sprites\\'
 enemy1_image = pygame.transform.scale(pygame.image.load(images_path + "enemyBlack5.png"), (30, 25))  # Image scaled to 30% of it's original size
 enemy2_image = pygame.transform.scale(pygame.image.load(images_path + "enemyRed1.png"), (30, 27))  # Image scaled to 30% of it's original size
