@@ -4,6 +4,7 @@ import sys
 import random
 from pygame.locals import *
 from player import Player
+import enemies
 
 pygame.init()
 
@@ -55,13 +56,11 @@ while True:
     screen.fill((0, 0, 0))
     player.update(PLAYER_SPEED, dt, up=moving_up, down=moving_down, right=moving_right, left=moving_left, shooting=shooting)
 
-    if enemy_array[len(enemy_array) - 1].x >= SCREEN_SIZE[0] - 30 or enemy_array[0].x < 0:
-        enemy_speed *= -1
+    enemies.enemyScript(enemy_array, SCREEN_SIZE, enemy_speed, enemy1_image, screen)
 
     for enemy_rect in enemy_array:
         pygame.draw.rect(screen, (0, 0, 255), enemy_rect, 2, 3)
         screen.blit(enemy1_image, (enemy_rect.x, enemy_rect.y))
-        enemy_rect.x += enemy_speed
 
     if started_cooldown:
         cooldown_tracker += clock.get_time()
