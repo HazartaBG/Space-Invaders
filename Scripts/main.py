@@ -24,8 +24,6 @@ pygame.display.set_caption("Space Invaders")
 
 player = Player(screen, player_image, player_laser_image, clock)
 
-test_rect = Rect(SCREEN_SIZE[0] / 2 - 35, SCREEN_SIZE[1] / 2 - 35, 70, 70)
-
 moving_right = False
 moving_left = False
 moving_up = False
